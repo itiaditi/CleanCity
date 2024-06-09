@@ -1,59 +1,72 @@
-const User = require("../models/user.model");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-// Register Route
-const register = async (req, res) => {
-    const { name, email, password, address, roleId, colonyId } = req.body;
+const User = require('../models/user.model');
+const Role = require('../models/role.model');
 
+// Function to add a user with role 'user'
+const addUser = async (req, res) => {
     try {
-        // Check if the user already exists
-        const existingUser = await User.findOne({ where: { email } });
-
-        if (existingUser) {
-            return res.status(400).json({ error: 'User already registered' });
+        const { name, email, password, address, latitude, longitude, colonyId } = req.body;
+        const role = await Role.findOne({ where: { role: 'user' } });
+        
+        if (!role) {
+            return res.status(400).json({ message: 'User role not found' });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const user = await User.create({
+        const newUser = await User.create({
             name,
             email,
-            password: hashedPassword,
+            password,
             address,
-            roleId,
-            colonyId,
+            latitude,
+            longitude,
+            roleId: role.id,
+            colonyId
         });
-
-        res.status(201).json(user);
+        res.status(201).json(newUser);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(500).json({ error: 'Error creating user', details: error.message });
     }
-}
-const login= async (req, res) => {
-    const { email, password } = req.body;
+};
 
+// Function to get all users
+const getUsers = async (req, res) => {
     try {
-        const user = await User.findOne({ where: { email } });
-
-        if (!user) {
-            return res.status(400).json({ error: 'Invalid email or password' });
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-
-        if (!isPasswordValid) {
-            return res.status(400).json({ error: 'Invalid email or password' });
-        }
-
-        const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
-
-        res.json({ token });
+        const users = await User.findAll({ include: [Role, Colony] });
+        res.status(200).json(users);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Error fetching users', details: error.message });
     }
-}
+};
 
-module.exports={
-    register,
-    login
-}
+const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedUser = await User.update(req.body, { where: { id } });
+        if (updatedUser[0] === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json({ message: 'User updated' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error updating user', details: error.message });
+    }
+};
+
+// Function to delete a user
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleted = await User.destroy({ where: { id } });
+        if (!deleted) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json({ message: 'User deleted' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error deleting user', details: error.message });
+    }
+};
+
+module.exports = {
+    addUser,
+    getUsers,
+    updateUser,
+    deleteUser
+};

@@ -7,7 +7,7 @@ const User = sequelize.define('User', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement:true
+        autoIncrement: true
     },
     name: {
         type: DataTypes.STRING,
@@ -56,8 +56,12 @@ const User = sequelize.define('User', {
         type: DataTypes.DATE,
         defaultValue: Sequelize.NOW
     }
+}, {
+    tableName: 'Users',  // Explicitly define the table name
+    timestamps: true     // Enable timestamps
 });
 
+// Define associations
 User.belongsTo(Role, { foreignKey: 'roleId' });
 User.belongsTo(Colony, { foreignKey: 'colonyId' });
 

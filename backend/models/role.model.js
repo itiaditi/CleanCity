@@ -1,7 +1,7 @@
-const { DataTypes, DATE } = require('sequelize');
+
 const sequelize = require('../dbConnection/connectToDb');
 
-const Role = sequelize.define('Roles', {
+const Role = sequelize.define('Role', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -11,7 +11,9 @@ const Role = sequelize.define('Roles', {
         type: DataTypes.STRING,
         allowNull: false
     }
-    
+}, {
+    tableName: 'Roles', // Explicitly specify the table name
+    timestamps: false   // Disable automatic timestamps
 });
 
 module.exports = Role;
