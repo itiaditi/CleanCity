@@ -5,9 +5,11 @@ const Login = () => {
     <>
    <div className='login-bg-image w-full bg-black'>
    <div className='container'>
+  
         <div className='w-full'>
-          
+         
           <form class="login">
+          <div><h2>Clean City</h2></div>
   <input type="text" placeholder="Username"/>
   <input type="password" placeholder="Password"/>
   <button>Login</button>

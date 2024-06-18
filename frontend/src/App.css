@@ -1,17 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+FR+Moderne:wght@100..400&display=swap');
 .container {
   max-width: 1140px;
   margin: 0 auto;
+
 }
 
 /* login page */
 
 .login-bg-image {
   background-image: url('');
+  
 }
 
 body {
+  text-align: center;
   background-color: rgb(161, 230, 164);
-  font-family: 'Asap', sans-serif;
+  font-family: "Playwrite FR Moderne", cursive;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
 }
 
 .login {
@@ -27,7 +34,9 @@ body {
   transition: transform 300ms, box-shadow 300ms;
   box-shadow: 5px 10px 10px rgba(2, 128, 144, 0.2);
 }
-
+h2{
+  font-weight: 700;
+}
 .login::before,
 .login::after {
   content: '';
@@ -43,7 +52,7 @@ body {
 
 .login::before {
   left: 40%;
-  bottom: -130%;
+  bottom: -100%;
   background-color: rgba(69, 105, 144, 0.15);
   animation: waves 6s infinite linear;
 }
@@ -56,7 +65,7 @@ body {
 }
 
 .login > input {
-  font-family: 'Asap', sans-serif;
+ 
   display: block;
   border-radius: 5px;
   font-size: 16px;
@@ -68,10 +77,10 @@ body {
 }
 
 .login > button {
-  font-family: 'Asap', sans-serif;
   cursor: pointer;
   color: #fff;
-  font-size: 16px;
+  font-size: 12px;
+  font-weight:700;
   text-transform: uppercase;
   width: 80px;
   border: 0;
