@@ -10,8 +10,8 @@ function App() {
 
   return (
    <>
-   {/* <Login/> */}
-   <Map/>
+   <Login/>
+   {/* <Map/> */}
    {/* <BrowserRouter>
       <GlobalState>
         <Switch>
