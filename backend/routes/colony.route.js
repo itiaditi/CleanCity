@@ -2,6 +2,7 @@ const { updateColony, deleteColony, getColony, addColony } = require("../control
 
 const express = require("express");
 const { authenticateToken } = require("../middleware/auth.middleware");
+const {checkRole} = require("../middleware/access.middleware");
 const colonyRouter = express.Router();
 const validateColony = (req, res, next) => {
     const { colonyName, totalGarbage } = req.body;
@@ -13,11 +14,10 @@ const validateColony = (req, res, next) => {
     }
     next();
 };
-colonyRouter.post("/",authenticateToken, checkRole(['superadmin']), validateColony, addColony);
+colonyRouter.post("/",authenticateToken, checkRole(['superadmin']), addColony);
 colonyRouter.get("/",authenticateToken,  checkRole(['superadmin']), getColony);
-colonyRouter.patch('/:id',authenticateToken,   checkRole(['superadmin']),  validateColony, updateColony);
+colonyRouter.patch('/:id',authenticateToken,   checkRole(['superadmin']), updateColony);
 colonyRouter.delete("/:id",authenticateToken,  checkRole(['superadmin']), deleteColony);
 
-module.exports = {
+module.exports = 
         colonyRouter
-}

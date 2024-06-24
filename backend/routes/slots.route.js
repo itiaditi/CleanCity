@@ -1,6 +1,6 @@
 const express = require('express');
 const { addSlot, getSlots, updateSlot, deleteSlot } = require('../controllers/slots.controller');
-const checkRole = require('../middleware/access.middleware');
+const {checkRole} = require('../middleware/access.middleware');
 
 
 const slotRouter = express.Router();
@@ -24,14 +24,13 @@ const validateSlot = (req, res, next) => {
 };
 
 // CRUD operations
-slotRouter.post('/', checkRole(['superadmin']), validateSlot, addSlot);
+slotRouter.post('/', checkRole(['superadmin']), addSlot);
 
 slotRouter.get('/', checkRole(['superadmin']), getSlots);
 
-slotRouter.put('/:id', checkRole(['superadmin']), validateSlot, updateSlot);
+slotRouter.put('/:id', checkRole(['superadmin']), updateSlot);
 
 slotRouter.delete('/:id', checkRole(['superadmin']), deleteSlot);
 
-module.exports = {
-    slotRouter
-};
+module.exports = slotRouter
+

@@ -1,19 +1,36 @@
 const jwt = require('jsonwebtoken');
-const authenticateToken = (req, res, next) => {
-    const token = req.header('Authorization').split(' ')[1];
 
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.header('Authorization').split(' ')[1];
+    if (!authHeader) {
+        return res.status(401).json({ error: 'Access denied, no token provided' });
+    }
+
+    const token = authHeader;
     if (!token) {
-        return res.status(401).json({ error: 'Access denied' });
+        return res.status(401).json({ error: 'Access denied, token missing' });
     }
 
     try {
-        const verified = jwt.verify(token, JWT_SECRET);
-        req.user = verified;
-        next();
+        jwt.verify(token, "masai", (err, decoded) => {
+            if (err) {
+                console.log(decoded);
+                return res.status(400).json({ error: 'Invalid token' });
+            }
+            console.log("secode" ,decoded);
+            req.user = {
+                id: decoded.id,
+                role: decoded.role
+            };
+            console.error('Token is missing id or role:', decoded);
+            next();
+        });
     } catch (error) {
+        
         res.status(400).json({ error: 'Invalid token' });
     }
 };
-module.exports ={
+
+module.exports = {
     authenticateToken
-}
+};

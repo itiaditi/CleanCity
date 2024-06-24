@@ -1,7 +1,7 @@
-
+const { DataTypes } = require('sequelize');
 const sequelize = require('../dbConnection/connectToDb');
 
-const Role = sequelize.define('Role', {
+const Role = sequelize.define('Roles', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,

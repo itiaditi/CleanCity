@@ -1,72 +1,162 @@
 const User = require('../models/user.model');
 const Role = require('../models/role.model');
+const bcrypt = require('bcrypt');
+const jwt = require("jsonwebtoken");
+const Colony = require('../models/colony.model');
+const secretKey = "masai";
+const saltRounds =10;
 
 // Function to add a user with role 'user'
 const addUser = async (req, res) => {
     try {
-        const { name, email, password, address, latitude, longitude, colonyId } = req.body;
-        const role = await Role.findOne({ where: { role: 'user' } });
-        
-        if (!role) {
-            return res.status(400).json({ message: 'User role not found' });
-        }
-
-        const newUser = await User.create({
-            name,
-            email,
-            password,
-            address,
-            latitude,
-            longitude,
-            roleId: role.id,
-            colonyId
-        });
-        res.status(201).json(newUser);
+      const { name, email, password, address, latitude, longitude,role, colonyId } = req.body;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      const newUser = await User.create({
+        name,
+        email,
+        password: hashedPassword,
+        address,
+        latitude,
+        longitude,
+        role,
+        colonyId,
+      });
+      res.status(201).json(newUser);
     } catch (error) {
-        res.status(500).json({ error: 'Error creating user', details: error.message });
+      res.status(500).json({ error: 'Error creating user', details: error.message });
+    }
+  };
+  
+  // Function to get all users
+  const getUsers = async (req, res) => {
+    try {
+      const users = await User.findAll();
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).json({ error: 'Error fetching users', details: error.message });
+    }
+  };
+  
+  // Function to update a user
+  const updateUser = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updatedUser = await User.update(req.body, { where: { id } });
+      if (updatedUser[0] === 0) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.status(200).json({ message: 'User updated' });
+    } catch (error) {
+      res.status(500).json({ error: 'Error updating user', details: error.message });
+    }
+  };
+  
+  // Function to delete a user
+  const deleteUser = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await User.destroy({ where: { id } });
+      if (!deleted) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.status(200).json({ message: 'User deleted' });
+    } catch (error) {
+      res.status(500).json({ error: 'Error deleting user', details: error.message });
+    }
+  };
+  
+  // Function to authenticate and login a user
+  const loginUser = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+        const token = jwt.sign(
+            {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role, // Include role in token creation
+                colonyId: user.colonyId, // Include colonyId in token creation
+            },
+            secretKey,
+            { expiresIn: '1h' }
+        );
+        res.status(200).json({
+            message: 'Login successful',
+            token,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                address: user.address,
+                latitude: user.latitude,
+                longitude: user.longitude,
+                role: user.role, // Include role in user object
+                colonyId: user.colonyId,
+            },
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Error logging in', details: error.message });
     }
 };
+
+  
 
 // Function to get all users
-const getUsers = async (req, res) => {
-    try {
-        const users = await User.findAll({ include: [Role, Colony] });
-        res.status(200).json(users);
-    } catch (error) {
-        res.status(500).json({ error: 'Error fetching users', details: error.message });
-    }
-};
+// const getUsers = async (req, res) => {
+//     try {
+//         const users = await User.findAll({ include: [Role, Colony] });
+//         res.status(200).json(users);
+//     } catch (error) {
+//         res.status(500).json({ error: 'Error fetching users', details: error.message });
+//     }
+// };
 
-const updateUser = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const updatedUser = await User.update(req.body, { where: { id } });
-        if (updatedUser[0] === 0) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        res.status(200).json({ message: 'User updated' });
-    } catch (error) {
-        res.status(500).json({ error: 'Error updating user', details: error.message });
-    }
-};
 
-// Function to delete a user
-const deleteUser = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const deleted = await User.destroy({ where: { id } });
-        if (!deleted) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        res.status(200).json({ message: 'User deleted' });
-    } catch (error) {
-        res.status(500).json({ error: 'Error deleting user', details: error.message });
-    }
-};
+
+
+//login
+
+// const loginUser = async (req, res) => {
+//     const { email, password } = req.body;
+
+//     try {
+//         const user = await User.findOne({ where: { email } });
+
+//         if (!user) {
+//             return res.status(404).json({ message: 'User not found' });
+//         }
+
+//         const validPassword = await bcrypt.compare(password, user.password);
+
+//         if (!validPassword) {
+//             return res.status(401).json({ message: 'Invalid password' });
+//         }
+
+//         const token = jwt.sign({ userId: user.id, role: user.roleId }, "masai", { expiresIn: '1h' });
+
+//         res.status(200).json({ message: 'Login successful', token });
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error logging in', error });
+//     }
+// };
+
+
+
+//register
+
 
 module.exports = {
     addUser,
     getUsers,
     updateUser,
-    deleteUser
+    deleteUser,
+    loginUser
 };

@@ -1,6 +1,6 @@
 const express = require('express');
 const { addVehicle, getVehicles, updateVehicle, deleteVehicle } = require('../controllers/vehicle.controller');
-const checkRole = require('../middlewares/access.middleware');
+const {checkRole} = require('../middleware/access.middleware');
 const { authenticateToken } = require('../middleware/auth.middleware');
 
 const vehicleRouter = express.Router();
@@ -15,14 +15,13 @@ const validateVehicle = (req, res, next) => {
 };
 
 // CRUD operations
-vehicleRouter.post('/',authenticateToken, checkRole(['superadmin']), validateVehicle, addVehicle);
+vehicleRouter.post('/',authenticateToken, checkRole(['superadmin']), addVehicle);
 
 vehicleRouter.get('/',authenticateToken, checkRole(['superadmin']), getVehicles);
 
-vehicleRouter.patch('/:id',authenticateToken, checkRole(['superadmin']), validateVehicle, updateVehicle);
+vehicleRouter.patch('/:id',authenticateToken, checkRole(['superadmin']), updateVehicle);
 
 vehicleRouter.delete('/:id',authenticateToken, checkRole(['superadmin']), deleteVehicle);
 
-module.exports = {
-    vehicleRouter
-};
+module.exports = vehicleRouter
+

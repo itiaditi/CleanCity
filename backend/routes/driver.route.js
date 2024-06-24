@@ -1,7 +1,8 @@
-const { deleteDriver, updateDriver, getDriver, addDriver } = require("../controllers/driver.controller");
-const checkRole = require("../middleware/access.middleware");
-const express  = require('express');
+const { deleteDriver, updateDriver, getDrivers, addDriver } = require("../controllers/driver.controller");
+const { checkRole } = require("../middleware/access.middleware");
+const express = require('express');
 const driverRouter = express.Router();
+
 // Manual validation function
 const validateDriver = (req, res, next) => {
     const { name, licenseNumber } = req.body;
@@ -14,11 +15,10 @@ const validateDriver = (req, res, next) => {
     next();
 };
 
-driverRouter.get("/",checkRole(['superadmin']),getDriver);
-driverRouter.post("/",checkRole(['superadmin']),addDriver);
-driverRouter.patch('/:id',checkRole(['superadmin']),updateDriver);
-driverRouter.delete('/:id',checkRole(['superadmin']),deleteDriver);
+// Define routes
+driverRouter.get("/", checkRole(['superadmin']), getDrivers);
+driverRouter.post("/", checkRole(['superadmin']), validateDriver, addDriver);
+driverRouter.patch('/:id', checkRole(['superadmin']), validateDriver, updateDriver);
+driverRouter.delete('/:id', checkRole(['superadmin']), deleteDriver);
 
-module.exports={
-    driverRouter
-}
+module.exports = driverRouter; // Export the router directly

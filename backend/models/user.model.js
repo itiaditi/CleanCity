@@ -1,6 +1,5 @@
-const { DataTypes, Sequelize } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../dbConnection/connectToDb');
-const Role = require('./role.model');
 const Colony = require('./colony.model');
 
 const User = sequelize.define('User', {
@@ -34,12 +33,10 @@ const User = sequelize.define('User', {
         type: DataTypes.DECIMAL(11, 8),
         defaultValue: null
     },
-    roleId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Role,
-            key: 'id'
-        }
+    role: {
+        type: DataTypes.ENUM('admin', 'user', 'superadmin'),
+        allowNull: false,
+        defaultValue: 'user'
     },
     colonyId: {
         type: DataTypes.INTEGER,
@@ -50,11 +47,11 @@ const User = sequelize.define('User', {
     },
     createdAt: {
         type: DataTypes.DATE,
-        defaultValue: Sequelize.NOW
+        defaultValue: DataTypes.NOW
     },
     updatedAt: {
         type: DataTypes.DATE,
-        defaultValue: Sequelize.NOW
+        defaultValue: DataTypes.NOW
     }
 }, {
     tableName: 'Users',  // Explicitly define the table name
@@ -62,7 +59,6 @@ const User = sequelize.define('User', {
 });
 
 // Define associations
-User.belongsTo(Role, { foreignKey: 'roleId' });
 User.belongsTo(Colony, { foreignKey: 'colonyId' });
 
 module.exports = User;

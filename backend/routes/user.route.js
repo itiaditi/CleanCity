@@ -1,7 +1,8 @@
 const express = require('express');
-const { addUser, getUsers, updateUser, deleteUser } = require('../controllers/user.controller');
-const checkRole = require('../middlewares/access.middleware');
+const { addUser, getUsers, updateUser, deleteUser, login, loginUser } = require('../controllers/user.controller');
+const {checkRole} = require('../middleware/access.middleware');
 
+const { authenticateToken } = require('../middleware/auth.middleware');
 const userRouter = express.Router();
 
 // Validation function for user creation
@@ -23,11 +24,11 @@ const validateUser = (req, res, next) => {
 };
 
 // CRUD operations
-userRouter.post('/', checkRole(['admin']), validateUser, addUser);
-userRouter.get('/', checkRole(['admin', 'superadmin']), getUsers);
-userRouter.put('/:id', checkRole(['admin']), validateUser, updateUser);
+userRouter.post('/', addUser);
+userRouter.get('/',authenticateToken, checkRole(['admin',"superadmin"]), getUsers);
+userRouter.put('/:id', checkRole(['admin']), updateUser);
 userRouter.delete('/:id', checkRole(['admin']), deleteUser);
+userRouter.post("/login",loginUser);
 
-module.exports = {
-    userRouter
-};
+module.exports =  userRouter
+
