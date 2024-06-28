@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCampground, faBars } from '@fortawesome/free-solid-svg-icons';
 import { Link, NavLink } from 'react-router-dom';
-import { Typewriter } from 'react-simple-typewriter';
+
+import Dashboard from './Dashboard';
+import LoginForm from './Login';
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -11,6 +13,7 @@ const Navbar = () => {
   };
 
   return (
+    <>
     <nav className="p-4 drop-shadow-2xl  text-black bg-gradient-to-r from-teal-200 to-transparent bg-opacity75">
       <div className="flex justify-between items-center">
        <NavLink to="/">
@@ -119,6 +122,9 @@ const Navbar = () => {
         </div>
       )}
     </nav>
+   
+   
+    </>
   );
 };
 

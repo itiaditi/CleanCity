@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import Navbar from './Navbar';
 
 // Define custom keyframe animations
 const animateBubble1 = keyframes`
@@ -104,6 +105,7 @@ const Bubble8 = styled.li`
 
 const LoginForm = () => {
   return (<>
+  <Navbar/>
     <div className="relative min-h-[580px] flex items-center justify-center bg-gradient-to-br from-teal-500 to-green-400">
       <div className="max-w-md w-full space-y-8 p-8 rounded-lg shadow-lg bg-gradient-to-br from-teal-400 to-green-400 backdrop-blur-lg backdrop-filter">
         <h1 className="text-3xl font-bold text-center text-gray-800">Welcome To Clean City</h1>
