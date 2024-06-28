@@ -2,15 +2,45 @@ const User = require('../models/user.model');
 const Role = require('../models/role.model');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
+const nodemailer = require('nodemailer');
 const Colony = require('../models/colony.model');
 const secretKey = "masai";
 const saltRounds =10;
 
 // Function to add a user with role 'user'
-const addUser = async (req, res) => {
+// const addUser = async (req, res) => {
+//     try {
+//       const { name, email, password, address, latitude, longitude,role, colonyId } = req.body;
+//       const hashedPassword = await bcrypt.hash(password, saltRounds);
+//       const newUser = await User.create({
+//         name,
+//         email,
+//         password: hashedPassword,
+//         address,
+//         latitude,
+//         longitude,
+//         role,
+//         colonyId,
+//       });
+//       res.status(201).json(newUser);
+//     } catch (error) {
+//       res.status(500).json({ error: 'Error creating user', details: error.message });
+//     }
+//   };
+  
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'aditi.tlgt244@gmail.com', // replace with your email
+      pass: 'qirv tpuf nnbg jhbg',  // replace with your email password
+    },
+  });
+  
+  const addUser = async (req, res) => {
     try {
-      const { name, email, password, address, latitude, longitude,role, colonyId } = req.body;
+      const { name, email, password, address, latitude, longitude, role, colonyId } = req.body;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
+      
       const newUser = await User.create({
         name,
         email,
@@ -21,12 +51,30 @@ const addUser = async (req, res) => {
         role,
         colonyId,
       });
+  
+      // Set up email options
+      const mailOptions = {
+        from: 'aditi.tlgt244@gmail.com', // replace with your email
+        to: email,
+        subject: 'Your Registration Details',
+        text: `Hello ${name},\n\nYou have been registered successfully. Here are your login details:\nEmail: ${email}\nPassword: ${password}\n\nThank you!`,
+      };
+  
+      // Send the email
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log('Error sending email:', error);
+        } else {
+          console.log('Email sent:', info.response);
+        }
+      });
+  
       res.status(201).json(newUser);
     } catch (error) {
       res.status(500).json({ error: 'Error creating user', details: error.message });
     }
   };
-  
+
   // Function to get all users
   const getUsers = async (req, res) => {
     try {
@@ -82,8 +130,10 @@ const addUser = async (req, res) => {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                role: user.role, // Include role in token creation
-                colonyId: user.colonyId, // Include colonyId in token creation
+                role: user.role, 
+                colonyId: user.colonyId, 
+                latitude:user.latitude,
+                longitude:user.longitude
             },
             secretKey,
             { expiresIn: '1h' }

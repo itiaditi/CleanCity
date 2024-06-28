@@ -24,7 +24,7 @@ const validateUser = (req, res, next) => {
 };
 
 // CRUD operations
-userRouter.post('/', addUser);
+userRouter.post('/',authenticateToken, checkRole(['admin',"superadmin"]), addUser);
 userRouter.get('/',authenticateToken, checkRole(['admin',"superadmin"]), getUsers);
 userRouter.put('/:id', checkRole(['admin']), updateUser);
 userRouter.delete('/:id', checkRole(['admin']), deleteUser);

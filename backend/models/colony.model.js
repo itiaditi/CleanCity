@@ -14,6 +14,14 @@ const Colony = sequelize.define('Colony', {
     totalGarbage: {
         type: DataTypes.DECIMAL(10, 2),
         defaultValue: null
+    },
+    createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
     }
 });
 
